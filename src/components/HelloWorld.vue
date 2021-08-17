@@ -28,10 +28,19 @@
     Edit
     <code>components/HelloWorld.vue</code> to test hot module replacement.
   </p>
+
+  <p>
+    Use
+    <a href="https://github.com/fission-suite/webnative">Fission webnative</a>
+    for auth and storage.
+  </p>
+  <button>Sign in with Fission</button>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue'
+
+import { useFissionAuthStore } from '@/store/fissionAuth'
 
 export default defineComponent({
   name: 'HelloWorld',
@@ -43,6 +52,9 @@ export default defineComponent({
   },
   setup: () => {
     const count = ref(0)
+
+    const fissionAuthStore = useFissionAuthStore()
+
     return { count }
   }
 })
