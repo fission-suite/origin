@@ -37,27 +37,17 @@
   <button>Sign in with Fission</button>
 </template>
 
-<script lang="ts">
-import { ref, defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 
 import { useFissionAuthStore } from '@/store/fissionAuth'
 
-export default defineComponent({
-  name: 'HelloWorld',
-  props: {
-    msg: {
-      type: String,
-      required: true
-    }
-  },
-  setup: () => {
-    const count = ref(0)
+// tip: you can use this compile time macro with ts literals to setup the props
+defineProps<{ msg: string }>()
 
-    const fissionAuthStore = useFissionAuthStore()
+const count = ref(0)
 
-    return { count }
-  }
-})
+const fissionAuthStore = useFissionAuthStore()
 </script>
 
 <style scoped>
