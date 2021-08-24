@@ -13,7 +13,10 @@
     >
   </p>
 
-  <p>See <code>README.md</code> for more information.</p>
+  <p>
+    See
+    <code>README.md</code> for more information.
+  </p>
 
   <p>
     <a href="https://vitejs.dev/guide/features.html" target="_blank"
@@ -29,16 +32,30 @@
     <code>components/HelloWorld.vue</code> to test hot module replacement.
   </p>
 
-  <p>
-    Use
-    <a href="https://github.com/fission-suite/webnative">Fission webnative</a>
-    for auth and storage.
-  </p>
-  <button>Sign in with Fission</button>
+  <div v-if="!fissionAuth.authed">
+    <p>
+      Use
+      <a href="https://github.com/fission-suite/webnative" target="_blank"
+        >Fission webnative</a
+      >
+      for auth and storage.
+    </p>
+    <button
+      v-if="!fissionAuth.authed"
+      @click="fissionAuthStore.redirectToLobby"
+    >
+      Sign in with Fission
+    </button>
+  </div>
+  <div v-if="fissionAuth.authed">
+    <p>
+      Welcome {{ fissionAuth.username }} 👋, you are signed in with Fission!
+    </p>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 
 import { useFissionAuthStore } from '@/store/fissionAuth'
 
@@ -48,6 +65,12 @@ defineProps<{ msg: string }>()
 const count = ref(0)
 
 const fissionAuthStore = useFissionAuthStore()
+fissionAuthStore.initialize()
+
+const fissionAuth = reactive({
+  authed: fissionAuthStore.authed,
+  username: fissionAuthStore.username
+})
 </script>
 
 <style scoped>
