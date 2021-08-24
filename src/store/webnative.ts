@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 import * as webnative from 'webnative'
 import { State } from 'webnative'
+import FileSystem from 'webnative/fs/filesystem'
 
 webnative.setup.debug({ enabled: true })
 
@@ -18,23 +19,17 @@ interface AuthState {
   state: State | null
   authed: boolean
   username: string | null
+  wnfs: FileSystem | null
 }
 
-export const useFissionAuthStore = defineStore({
-  id: 'fissionAuth',
+export const useWebnativeStore = defineStore({
+  id: 'webnative',
   state: (): AuthState => ({
     state: null,
     authed: false,
-    username: null
+    username: null,
+    wnfs: null
   }),
-  getters: {
-    isAuthed(state) {
-      return state.authed
-    },
-    getUsername(state) {
-      return state.username
-    }
-  },
   actions: {
     async initialize() {
       await webnative
@@ -47,6 +42,7 @@ export const useFissionAuthStore = defineStore({
             case webnative.Scenario.Continuation:
               this.username = state.username
               this.authed = true
+              this.wnfs = state.fs ?? null
               break
 
             case webnative.Scenario.AuthCancelled:
@@ -63,11 +59,13 @@ export const useFissionAuthStore = defineStore({
         .catch((err) => {
           switch (err) {
             case webnative.InitialisationError.InsecureContext:
+              console.log('Secure context required by webnative')
               // We need a secure context to do cryptography
               // Usually this means we need HTTPS or localhost
               break
 
             case webnative.InitialisationError.UnsupportedBrowser:
+              console.log('Browser not supported by webnative')
               // Browser not supported.
               // Example: Firefox private mode can't use indexedDB.
               break
@@ -77,6 +75,26 @@ export const useFissionAuthStore = defineStore({
     redirectToLobby() {
       if (this.state?.permissions) {
         webnative.redirectToLobby(this.state.permissions)
+      }
+    },
+    async readCount() {
+      if (this.wnfs) {
+        const path = this.wnfs.appPath(webnative.path.file('count.json'))
+
+        if (await this.wnfs.exists(path)) {
+          const val = (await this.wnfs.read(path)) as string
+          const { count } = JSON.parse(val)
+          return count
+        } else {
+          return 0
+        }
+      }
+    },
+    async writeCount(count: number) {
+      if (this.wnfs) {
+        const path = this.wnfs.appPath(webnative.path.file('count.json'))
+        await this.wnfs.write(path, JSON.stringify({ count }))
+        await this.wnfs.publish()
       }
     }
   }

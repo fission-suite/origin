@@ -1,7 +1,7 @@
 import { createPinia } from 'pinia'
 import { OriginPlugin } from '@/plugins'
 import { useMainStore } from '@/store/main'
-import { useFissionAuthStore } from '@/store/fissionAuth'
+import { useWebnativeStore } from '@/store/webnative'
 
 export const install: OriginPlugin = ({ app, router, initialState }) => {
   const pinia = createPinia()
@@ -19,8 +19,8 @@ export const install: OriginPlugin = ({ app, router, initialState }) => {
     const store = useMainStore(pinia)
     store.initialize()
 
-    const fissionAuthStore = useFissionAuthStore(pinia)
-    await fissionAuthStore.initialize()
+    const webnativeStore = useWebnativeStore(pinia)
+    await webnativeStore.initialize()
     next()
   })
 }
