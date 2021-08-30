@@ -1,10 +1,26 @@
+/** ✨ Webnative Auth and Storage Provider ✨
+ *
+ * See https://guide.fission.codes/developers/webnative for the complete webnative
+ * documentation. 📚
+ */
+
 import { defineStore } from 'pinia'
 
 import * as webnative from 'webnative'
 import { State } from 'webnative'
 import FileSystem from 'webnative/fs/filesystem'
 
-webnative.setup.debug({ enabled: true })
+/** Debug logs
+ * Uncomment the following line show webnative debug messages.
+ * See https://guide.fission.codes/developers/webnative/additional-info#debug-logs for details.
+ */
+
+// webnative.setup.debug({ enabled: true })
+
+/** Permissions
+ * Origin requests app permissions from the user when they sign in.
+ * The requested permissions grant Origin access to use app storage for arg/origin.
+ */
 
 const permissions = {
   permissions: {
@@ -14,6 +30,13 @@ const permissions = {
     }
   }
 }
+
+/** Webnative State
+ * state: webnative representation of state
+ * authed: The user has signed in with Fission and granted permissions or not
+ * username: Fission username
+ * wnfs: Webnative Filesystem, where the user stores their data
+ */
 
 interface WebnativeState {
   state: State | null
@@ -31,6 +54,15 @@ export const useWebnativeStore = defineStore({
     wnfs: null
   }),
   actions: {
+    /** Initialize webnative
+     * If the user has signed in with Fission, their scenario will
+     * be AuthSucceeded or Continuation. Set their username, authed state,
+     * and WNFS.
+     *
+     * Otherwise, their scenario will be AuthCancelled or NotAuthorised.
+     * The authed state should be false and username and WNFS are not set.
+     */
+
     async initialize() {
       await webnative
         .initialise(permissions)
@@ -72,11 +104,30 @@ export const useWebnativeStore = defineStore({
           }
         })
     },
+
+    /** Redirect to Fission auth lobby
+     * When a user signs into Fission, they are redirected to the Fission
+     * auth lobby (https://auth.fission.codes/), where they are prompted to
+     * grant Origin permission to use their filesystem.
+     */
+
     redirectToLobby() {
       if (this.state?.permissions) {
         webnative.redirectToLobby(this.state.permissions)
       }
     },
+
+    /** Read count
+     * The count is stored in WNFS. Read the count if the user has one stored.
+     * Otherwise, return a count of 0.
+     *
+     * The count is stored the first time the user increments it.
+     *
+     * The appPath helper function prefixes the path to read from arg/origin app
+     * directory. appPath is available when the user has granted app permissions
+     * and is set internally by webnative
+     */
+
     async readCount() {
       if (this.wnfs && this.wnfs.appPath) {
         const path = this.wnfs.appPath(webnative.path.file('count.json'))
@@ -90,6 +141,15 @@ export const useWebnativeStore = defineStore({
         }
       }
     },
+
+    /** Write count
+     * Write the count in the arg/origin directory.
+     *
+     * Note that publish must be called to persist any changes made in
+     * WNFS. Changes include writes, but also other mutations like making
+     * a directory or deleting a file.
+     */
+
     async writeCount(count: number) {
       if (this.wnfs && this.wnfs.appPath) {
         const path = this.wnfs.appPath(webnative.path.file('count.json'))
