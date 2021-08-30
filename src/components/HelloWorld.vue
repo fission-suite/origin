@@ -58,7 +58,9 @@
     </p>
     <ul>
       <li>
-        View your count in
+        Sign in to
+        <a href="https://drive.fission.codes/" target="_blank">Fission Drive</a>
+        and then
         <a
           :href="
             'https://drive.fission.codes/#/' +
@@ -66,8 +68,9 @@
             '/Apps/arg/origin'
           "
           target="_blank"
-          >Fission Drive</a
+          >view your count</a
         >
+        there.
       </li>
       <li>
         <a
