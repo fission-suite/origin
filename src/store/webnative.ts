@@ -78,7 +78,7 @@ export const useWebnativeStore = defineStore({
       }
     },
     async readCount() {
-      if (this.wnfs) {
+      if (this.wnfs && this.wnfs.appPath) {
         const path = this.wnfs.appPath(webnative.path.file('count.json'))
 
         if (await this.wnfs.exists(path)) {
@@ -91,7 +91,7 @@ export const useWebnativeStore = defineStore({
       }
     },
     async writeCount(count: number) {
-      if (this.wnfs) {
+      if (this.wnfs && this.wnfs.appPath) {
         const path = this.wnfs.appPath(webnative.path.file('count.json'))
         await this.wnfs.write(path, JSON.stringify({ count }))
         await this.wnfs.publish()
