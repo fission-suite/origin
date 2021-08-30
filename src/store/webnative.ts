@@ -15,7 +15,7 @@ const permissions = {
   }
 }
 
-interface AuthState {
+interface WebnativeState {
   state: State | null
   authed: boolean
   username: string | null
@@ -24,7 +24,7 @@ interface AuthState {
 
 export const useWebnativeStore = defineStore({
   id: 'webnative',
-  state: (): AuthState => ({
+  state: (): WebnativeState => ({
     state: null,
     authed: false,
     username: null,
