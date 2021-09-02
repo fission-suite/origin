@@ -1,6 +1,7 @@
 import { createPinia } from 'pinia'
 import { OriginPlugin } from '@/plugins'
 import { useMainStore } from '@/store/main'
+import { useWebnativeStore } from '@/store/webnative'
 
 export const install: OriginPlugin = ({ app, router, initialState }) => {
   const pinia = createPinia()
@@ -14,9 +15,12 @@ export const install: OriginPlugin = ({ app, router, initialState }) => {
     pinia.state.value = initialState?.pinia || {}
   }
 
-  router.beforeEach((to, from, next) => {
+  router.beforeEach(async (to, from, next) => {
     const store = useMainStore(pinia)
     store.initialize()
+
+    const webnativeStore = useWebnativeStore(pinia)
+    await webnativeStore.initialize()
     next()
   })
 }

@@ -13,7 +13,10 @@
     >
   </p>
 
-  <p>See <code>README.md</code> for more information.</p>
+  <p>
+    See
+    <code>README.md</code> for more information.
+  </p>
 
   <p>
     <a href="https://vitejs.dev/guide/features.html" target="_blank"
@@ -28,22 +31,94 @@
     Edit
     <code>components/HelloWorld.vue</code> to test hot module replacement.
   </p>
+
+  <div v-if="!webnativeState.authed">
+    <p>
+      Use
+      <a href="https://github.com/fission-suite/webnative" target="_blank"
+        >Fission webnative</a
+      >
+      for auth and storage.
+    </p>
+    <button
+      v-if="!webnativeState.authed"
+      @click="webnativeStore.redirectToLobby"
+    >
+      Sign in with Fission
+    </button>
+  </div>
+  <div v-if="webnativeState.authed">
+    <p>
+      Welcome {{ webnativeState.username }} 👋, you are signed in with Fission!
+    </p>
+    <button @click="storedCount++">stored count is: {{ storedCount }}</button>
+    <p>
+      The value of stored count is saved in IPFS by the Webantive Filesystem
+      (WNFS).
+    </p>
+    <ul>
+      <li>
+        Sign in to
+        <a href="https://drive.fission.codes/" target="_blank">Fission Drive</a>
+        and then
+        <a
+          :href="
+            'https://drive.fission.codes/#/' +
+            webnativeState.username +
+            '/Apps/arg/origin'
+          "
+          target="_blank"
+          >view your count</a
+        >
+        there.
+      </li>
+      <li>
+        <a
+          href="https://guide.fission.codes/accounts/account-signup/account-linking"
+          target="_blank"
+          >Link your account</a
+        >
+        to sync your count across devices or browsers.
+      </li>
+      <li>
+        <a
+          href="https://guide.fission.codes/developers/webnative"
+          target="
+      _blank"
+          >Learn more</a
+        >
+        about the webnative SDK.
+      </li>
+    </ul>
+  </div>
 </template>
 
-<script lang="ts">
-import { ref, defineComponent } from 'vue'
+<script lang="ts" setup>
+import { reactive, ref, watch, watchEffect } from 'vue'
 
-export default defineComponent({
-  name: 'HelloWorld',
-  props: {
-    msg: {
-      type: String,
-      required: true
-    }
-  },
-  setup: () => {
-    const count = ref(0)
-    return { count }
+import { useWebnativeStore } from '@/store/webnative'
+
+// tip: you can use this compile time macro with ts literals to setup the props
+defineProps<{ msg: string }>()
+
+const count = ref(0)
+const storedCount = ref(0)
+
+const webnativeStore = useWebnativeStore()
+webnativeStore.initialize()
+
+const webnativeState = reactive({
+  authed: webnativeStore.authed,
+  username: webnativeStore.username
+})
+
+watch(storedCount, (newCount, _) => {
+  webnativeStore.writeCount(newCount)
+})
+
+watchEffect(async () => {
+  if (webnativeStore.wnfs) {
+    storedCount.value = await webnativeStore.readCount()
   }
 })
 </script>
