@@ -7,6 +7,7 @@ _The fast web3 application toolkit ⚡️_
 
 [![node compatility](https://img.shields.io/node/v/vite.svg)](https://nodejs.org/en/about/releases/)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
+[![Built by FISSION](https://img.shields.io/badge/webnative-v0.31.0-purple.svg )](https://github.com/fission-suite/webnative)
 
 ***status: WIP alpha warning 🐉***
 ## Motivation

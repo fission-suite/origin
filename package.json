@@ -17,7 +17,7 @@
     "pinia": "^2.0.0-rc.4",
     "vue": "^3.0.5",
     "vue-router": "^4.0.10",
-    "webnative": "^0.30.0"
+    "webnative": "^0.31.0"
   },
   "workspaces": [
     "./src/plugins/*"
